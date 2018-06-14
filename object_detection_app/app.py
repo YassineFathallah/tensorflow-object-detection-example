@@ -133,6 +133,9 @@ def draw_bounding_box_on_image(image, box, color='red', thickness=4):
                                 ymin * im_height, ymax * im_height)
   draw.line([(left, top), (left, bottom), (right, bottom),
              (right, top), (left, top)], width=thickness, fill=color)
+  image = Image.open(image)
+  image = image.crop((left,top, right, bottom1))
+  image.save('toto.png')
 
 
 def encode_image(image):
@@ -141,17 +144,6 @@ def encode_image(image):
   imgstr = 'data:image/png;base64,{:s}'.format(
       base64.b64encode(image_buffer.getvalue()))
   return imgstr
-
-def crop_image(image, box):
-  draw = ImageDraw.Draw(image)
-  im_width, im_height = image.size
-  ymin, xmin, ymax, xmax = box
-  (left, right, top, bottom) = (xmin * im_width, xmax * im_width,
-                                ymin * im_height, ymax * im_height)
-  
-  image = Image.open(image)
-  image = image.crop((left,top, right, bottom1))
-  image.save('toto.png')
 
 def detect_objects(image_path):
   image = Image.open(image_path).convert('RGB')
@@ -166,7 +158,7 @@ def detect_objects(image_path):
       new_images[cls] = image.copy()
     draw_bounding_box_on_image(new_images[cls], boxes[i],
                                thickness=int(scores[i]*10)-4)
-    crop_image(new_images[cls], boxes[i])
+    
 
 
   result = {}
